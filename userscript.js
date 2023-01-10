@@ -6,6 +6,8 @@
 // @author       Piotr Milczanowski
 // @match        https://brzozow.patarch.medlan.pl/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @updateURL    https://raw.githubusercontent.com/Mrocza/PatARCH/master/userscript.js
+// @downloadURL  https://raw.githubusercontent.com/Mrocza/PatARCH/master/userscript.js
 // @grant        none
 // ==/UserScript==
 
