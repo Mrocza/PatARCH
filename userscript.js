@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Nakładka Brzozów
 // @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  Nakładka na program PatARCH opracowana na potraeby Zakładu Patomorfologii Brzozów.
+// @version      0.1.1
+// @description  Nakładka na program PatARCH opracowana na potrzeby Zakładu Patomorfologii Brzozów.
 // @author       Piotr Milczanowski
 // @match        https://brzozow.patarch.medlan.pl/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -11,8 +11,10 @@
 // @grant        none
 // ==/UserScript==
 
-setTimeout(function() {
+setTimeout(function () {
     'use strict';
+    console.log('Nakładka Brzozów w wersji 0.1.1');
+
     // Weryfikacja całości materiału
     if (window.location.href.match(/analysis_(new|edit)/)) {
         let used = document.querySelector('#m_used_entirely');
@@ -22,19 +24,9 @@ setTimeout(function() {
         }
     }
     // Dodatkowe skróty klawiszowe
-    if ( window.location.href.match(/analysis_(new|edit)/)) {
+    if (window.location.href.match(/analysis_(new|edit)/)) {
         let moreFixation = document.querySelector('#a_more_fixation');
-        moreFixation.after(keyboardHint('Ctrl+D'))
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.keyCode == 68) {
-                event.preventDefault();
-                if (moreFixation.checked) {
-                    moreFixation.checked = false;
-                } else {
-                    moreFixation.checked = true;
-                }
-            }
-        });
+        addKeyboardShortcut(moreFixation, 'd', ctrl = true)
     }
     //
     //
@@ -68,7 +60,7 @@ setTimeout(function() {
             'Dwadzieścia wycinków ',
         ]
         // TODO: przenieść skróty z AutoHotKey
-        macro.addEventListener('input', function(e) {
+        macro.addEventListener('input', function (e) {
             let start = macro.selectionStart;
             let end = macro.selectionEnd;
             let startingLength = macro.value.length;
@@ -76,7 +68,7 @@ setTimeout(function() {
             if (match) {
                 count.value = match[1];
                 macro.value = macro.value.replace(/^([0-9]+)w /, wycinki[match[1]])
-                macro.setSelectionRange(start-startingLength+macro.value.length, end-startingLength+macro.value.length);
+                macro.setSelectionRange(start - startingLength + macro.value.length, end - startingLength + macro.value.length);
             }
 
         });
@@ -85,13 +77,13 @@ setTimeout(function() {
     if (window.location.href.match(/medlan\.pl(\/user\/login|)\/?$/)) {
         let login = document.querySelector('#user_login');
         let pass = document.querySelector('#user_password');
-        document.addEventListener('keydown', function(e) {
-            if (e.keyCode == 114) { // F3
-                event.preventDefault();
+        document.addEventListener('keydown', function (e) {
+            if (e.key == 'F3') {
+                e.preventDefault();
                 pass.focus();
             }
-            if (e.keyCode == 13) { // Enter
-                event.preventDefault();
+            if (e.key == 'Enter') {
+                e.preventDefault();
                 if (login.value == '') {
                     let creds = pass.value.split('<br/>'); // format kodu: login<br/>hasło
                     login.value = creds[0];
@@ -102,16 +94,16 @@ setTimeout(function() {
         });
     }
     if (window.location.href.match(/user\/logout/)) {
-        document.addEventListener('keydown', function(e) {
-            if (e.keyCode == 114) { // F3
-                event.preventDefault();
+        document.addEventListener('keydown', function (e) {
+            if (e.key == 'F3') {
+                e.preventDefault();
                 document.location = '/user/login';
             }
         });
     }
 }, 300);
 
-function displayText(text, hoverText='Dodatek PatARCH Brzozów.', width=200) {
+function displayText(text, hoverText = 'Dodatek PatARCH Brzozów.', width = 200) {
     /*
       Wyświetla informacje w prawym dolnym rogu paska statusu.
     */
@@ -163,12 +155,20 @@ function selectedHasAnalysis() {
     return false
 }
 
-function keyboardHint(key) {
+function addKeyboardShortcut(element, key = '', ctrl = false) {
     /*
-      Zwraca element z opisem skrótu klawiszowego.
+      Dodaje skrót klawiszowy do wskazanego elementu.
     */
+    document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey == ctrl && e.key == key) {
+            e.preventDefault();
+            if (element.hasAttribute('checked')) {
+                element.checked = !element.checked;
+            }
+        }
+    });
     let hint = document.createElement('span');
     hint.classList.add('form-descr');
-    hint.innerHTML = `&nbsp[${key}]&nbsp`;
-    return hint;
+    hint.innerHTML += `&nbsp[${ctrl ? 'Ctrl+' : ''}${key.toUpperCase()}]&nbsp`;
+    element.after(hint)
 }
