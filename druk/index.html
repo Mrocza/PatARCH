@@ -95,7 +95,7 @@ body {
 		<input id="password" type="password" oninput="loginMatrix();">
 	</div>
 	
-	<div id="bloczek" class="control-block">
+	<div id="bloczek" class="control-block" style="display:none">
 		<input id="block" type="text" oninput="blockMatrix();">
 	</div>
 </div>
@@ -183,7 +183,6 @@ document.addEventListener('keydown', function(e) {
 		printSticker()
 	}
 });
-
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 function getBlock34(block) {
