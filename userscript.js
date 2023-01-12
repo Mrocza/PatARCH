@@ -1,13 +1,11 @@
 // ==UserScript==
 // @name         Nakładka Brzozów
 // @namespace    http://tampermonkey.net/
-// @version      0.1.1
+// @version      0.1.2
 // @description  Nakładka na program PatARCH opracowana na potrzeby Zakładu Patomorfologii Brzozów.
 // @author       Piotr Milczanowski
 // @match        https://brzozow.patarch.medlan.pl/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @updateURL    https://raw.githubusercontent.com/Mrocza/PatARCH/master/userscript.js
-// @downloadURL  https://raw.githubusercontent.com/Mrocza/PatARCH/master/userscript.js
 // @grant        none
 // ==/UserScript==
 
@@ -15,7 +13,7 @@ setTimeout(function () {
     'use strict';
     console.log('Nakładka Brzozów w wersji 0.1.1');
 
-    // Weryfikacja całości materiału
+    // Weryfikacja całości materiału. Patrz zgłoszenie [MedLAN#5209886].
     if (window.location.href.match(/analysis_(new|edit)/)) {
         let used = document.querySelector('#m_used_entirely');
         if (!selectedEmpty() && selectedHasAnalysis() && used.checked) {
@@ -26,7 +24,7 @@ setTimeout(function () {
     // Dodatkowe skróty klawiszowe
     if (window.location.href.match(/analysis_(new|edit)/)) {
         let moreFixation = document.querySelector('#a_more_fixation');
-        addKeyboardShortcut(moreFixation, 'd', ctrl = true)
+        addKeyboardShortcut(moreFixation, 'd', { ctrl: true })
     }
     //
     //
@@ -85,7 +83,12 @@ setTimeout(function () {
             if (e.key == 'Enter') {
                 e.preventDefault();
                 if (login.value == '') {
-                    let creds = pass.value.split('<br/>'); // format kodu: login<br/>hasło
+                    let creds = pass.value; // format kodu: login<br/>hasło
+                    if (creds.includes('<br/>')) {
+                        creds = creds.split('<br/>')
+                    } else {
+                        creds = atob(creds).split('<br/>')
+                    }
                     login.value = creds[0];
                     pass.value = creds[1];
                 }
@@ -155,12 +158,12 @@ function selectedHasAnalysis() {
     return false
 }
 
-function addKeyboardShortcut(element, key = '', ctrl = false) {
+function addKeyboardShortcut(element, key = '', { ctrl = false, shift = false, alt = false }) {
     /*
       Dodaje skrót klawiszowy do wskazanego elementu.
     */
     document.addEventListener('keydown', function (e) {
-        if (e.ctrlKey == ctrl && e.key == key) {
+        if (e.ctrlKey == ctrl && e.shiftKey == shift && e.altKey == alt && e.key == key) {
             e.preventDefault();
             if (element.hasAttribute('checked')) {
                 element.checked = !element.checked;
