@@ -2,7 +2,7 @@
 Niniejsze repozytorium zawiera userscript stanowiący rozszerzenie systemu PatARCH na potrzeby Zakładu Patomorfologii szpitala onkologicznego w Brzozowie.
 
 Początkowo skrypt miał za zadanie naprawić błąd w programie, który pomoc techniczna MedLANu uznała za niemożliwy do rozwiązania (zgłoszenie [MedLAN#5209886]).
-Wkurwili mnie tym trochę bo jest to coś co zgłaszałem już w tygodniu wprowadzającym program na zakład i nie jest to sprawa wcale skomplikowana.
+Zdenerwowali mnie tym trochę bo jest to coś co zgłaszałem już w tygodniu wprowadzającym program na zakład i nie jest to sprawa wcale skomplikowana.
 Doszedłem więc do wniosku że zrobię to sam.    
 
 # Funkcje
@@ -10,7 +10,9 @@ Z czasem funkcjonalność została rozszerzona o dodatkowe opcje usprawniające 
 
 Dodatkowe skróty klawiszowe
 --------
-`Ctrl+D` **Wymaga dotrwalenia** - podczas edycji oznacza bloczek jako wymagający dotrwalenia
+`Ctrl+D` **Wymaga dotrwalenia** - podczas edycji oznacza bloczek jako wymagający dotrwalenia     
+`Ctrl+R` **Wycinek rozfragmentowany** - podczas edycji oznacza wycinek jako rozfragmentowany     
+
 
 Hasło w kodzie kreskowym
 --------

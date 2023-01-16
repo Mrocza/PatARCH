@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         Nakładka Brzozów
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.2.1
 // @description  Nakładka na program PatARCH opracowana na potrzeby Zakładu Patomorfologii Brzozów.
 // @author       Piotr Milczanowski
+// @homepage     https://github.com/Mrocza/PatARCH
 // @match        https://brzozow.patarch.medlan.pl/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @grant        none
@@ -13,7 +14,7 @@
 
 setTimeout(function () {
     'use strict';
-    console.log('Nakładka Brzozów w wersji 0.2');
+    console.log('Nakładka Brzozów w wersji 0.2.1');
 
     // Weryfikacja całości materiału. Patrz zgłoszenie [MedLAN#5209886].
     if (window.location.href.match(/analysis_(new|edit)/)) {
@@ -36,6 +37,10 @@ setTimeout(function () {
     if (window.location.href.match(/analysis_(new|edit)/)) {
         let macro = document.querySelector('#m_macro_img');
         enableAbbriviations(macro)
+    }
+    // Strony startowe dla stanowisk pracy
+    if (window.location.href.match(/menu\/start.*1$/)) {
+        console.log('Otwarte po logowaniu.')
     }
     // Hasło w kodzie
     if (window.location.href.match(/medlan\.pl(\/user\/login|)\/?$/)) {
@@ -101,6 +106,13 @@ function getUser() {
     return user.groups.login
 }
 
+function getLocation() {
+    /*
+      Zwraca miejsce pracy.
+    */
+    return document.querySelector('.banner_licence').text
+}
+
 function selectedEmpty() {
     /*
       Zwraca true jeżeli aktwny materiał został pobrany w całości.
@@ -134,7 +146,7 @@ function addKeyboardShortcut(element, key = '', { ctrl = false, shift = false, a
     document.addEventListener('keydown', function (e) {
         if (e.ctrlKey == ctrl && e.shiftKey == shift && e.altKey == alt && e.key == key) {
             e.preventDefault();
-            if (element.type == 'checkbox') {
+            if (element && element.type == 'checkbox') {
                 element.checked = !element.checked;
             }
         }
@@ -148,13 +160,16 @@ function addKeyboardShortcut(element, key = '', { ctrl = false, shift = false, a
 }
 
 function enableAbbriviations(element) {
+    /*
+      Uruchamia skróty wewnątrzzakładowe dla wskazanego elementu.
+    */
     var abbrs = [
         // zamiany funkcyjne:
         [/^([0-9]+)w[ .,:]/i, (...a)=>{document.querySelector('#a_sample_count').value=a[1];return a[0]}],
         [/^(wzksm|wzjm)[ .,:]/i, (...a)=>{document.querySelector('#a_sample_fragmented').checked=1;return a[0]}],
         [/wyskrob.*(bcz|bjcz|bccz)[ .,:]/i, (...a)=>{document.querySelector('#a_more_fixation').checked=1;return a[0]}],
         // zamiany specjalne:
-        [/([0-9])mm/, '$1 mm'],
+        [/([0-9\]])mm/, '$1 mm'],
         [/([0-9]+)[zxcs]([0-9]+)[zxcs]([0-9]+)([zxcs]|)/, '$1x$2x$3'],
         // materiały drobne
         [/\b1w([ .,:])/i, 'jeden wycinek$1'],
