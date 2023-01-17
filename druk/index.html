@@ -113,16 +113,21 @@ const login = document.querySelector('#login')
 const password = document.querySelector('#password')
 const block = document.querySelector('#block')
 
+var ENCODE64 = false
+
 function printSticker() {
 	controlls.style.display = 'none';
 	window.print();
 	setTimeout(function(){controlls.style.display = 'block'}, 100);
 }
 function loginMatrix() {
+	let content = login.value+'<br/>'+password.value;
+	if (ENCODE64) 
+		content = btoa(content)
 	preview.innerHTML = '';
 	preview.appendChild(
 		DATAMatrix({
-			msg: login.value+'<br/>'+password.value,
+			msg: content,
 			dim: 90,
 			pad: 1
 		})
