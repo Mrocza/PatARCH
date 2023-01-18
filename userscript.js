@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nakładka Brzozów
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.3.1
 // @description  Nakładka na program PatARCH opracowana na potrzeby Zakładu Patomorfologii Brzozów.
 // @author       Piotr Milczanowski
 // @homepage     https://github.com/Mrocza/PatARCH
@@ -14,7 +14,7 @@
 
 setTimeout(function () {
     'use strict';
-    console.log('Nakładka Brzozów w wersji 0.3');
+    console.log('Nakładka Brzozów w wersji 0.3.1');
 
     // Weryfikacja całości materiału. Patrz zgłoszenie [MedLAN#5209886].
     if (window.location.href.match(/analysis_(new|edit)/)) {
@@ -45,10 +45,10 @@ setTimeout(function () {
     }
     // Strony startowe dla stanowisk pracy
     if (window.location.href.match(/menu\/start(\/|\?place_was_changed=)1$/)) {
-        if (getLocation() == 'Pracownia Histopatologii - Zatapianie')
+        setTimeout(function () {
+            if (getLocation() == 'Pracownia Histopatologii - Zatapianie')
             document.location = '/workplace/embedding';
-        if (getLocation() == 'Pracownia Histopatologii - Krojenie')
-            document.location = '/workplace/slicing2';
+        }, 2000)
     }
     // Hasło w kodzie
     if (window.location.href.match(/medlan\.pl(\/user\/login|)\/?$/)) {
@@ -87,7 +87,7 @@ setTimeout(function () {
         }, 10000);
     }
     // document.querySelectorAll('#dl-form dt')[16]
-}, 300);
+}, 100);
 
 function displayText(text, hoverText = 'Dodatek PatARCH Brzozów.', width = 200) {
     /*
@@ -177,6 +177,7 @@ function enableAbbriviations(element) {
         [/^([0-9]+)w[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_count').value=a[1];return a[0]}],
         [/^(wzksm|wzjm)[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_fragmented').checked=1;return a[0]}],
         [/wyskrob.*(bcz|bjcz|bccz)[ .,:;]/i, (...a)=>{document.querySelector('#a_more_fixation').checked=1;return a[0]}],
+        [/\bDATA([ .,:;])/, ()=>{(new Date()).toISOString().replace(/([\d-]+)T(\d\d:\d\d).*/,'$1 $2 - ')}]
         // zamiany specjalne:
         [/([0-9\]])mm/, '$1 mm'],
         [/([0-9]+)[zxcs]([0-9]+)[zxcs]([0-9]+)([zxcs]|)/, '$1x$2x$3'],
