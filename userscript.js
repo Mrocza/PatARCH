@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nakładka Brzozów
 // @namespace    http://tampermonkey.net/
-// @version      0.3.1
+// @version      0.3.2
 // @description  Nakładka na program PatARCH opracowana na potrzeby Zakładu Patomorfologii Brzozów.
 // @author       Piotr Milczanowski
 // @homepage     https://github.com/Mrocza/PatARCH
@@ -14,11 +14,11 @@
 
 setTimeout(function () {
     'use strict';
-    console.log('Nakładka Brzozów w wersji 0.3.1');
+    console.log('Nakładka Brzozów w wersji 0.3.2');
 
     // Weryfikacja całości materiału. Patrz zgłoszenie [MedLAN#5209886].
     if (window.location.href.match(/analysis_(new|edit)/)) {
-        let used = document.querySelector('#m_used_entirely');
+        var used = document.querySelector('#m_used_entirely');
         if (!selectedEmpty() && selectedHasAnalysis() && used.checked) {
             used.checked = false;
             displayText('Skorygowano pozycję "Mat. zużyty w całości?"', 'Wewnątrzzakładowa korekta błędu. Patrz zgłoszenie [MedLAN#5209886].', 260);
@@ -26,55 +26,55 @@ setTimeout(function () {
     }
     // Zaznaczenie całości textu w polu lokalizacji
     if (window.location.href.match(/localization_new/)) {
-        let localization = document.querySelector('#l_description');
+        var localization = document.querySelector('#l_description');
         localization.select();
     }
     // Dodatkowe skróty klawiszowe
     if (window.location.href.match(/analysis_(new|edit)/)) {
-        let moreFixation = document.querySelector('#a_more_fixation');
+        var moreFixation = document.querySelector('#a_more_fixation');
         addKeyboardShortcut(moreFixation, 'd', { ctrl: true })
-        let sampleFragmented = document.querySelector('#a_sample_fragmented');
+        var sampleFragmented = document.querySelector('#a_sample_fragmented');
         addKeyboardShortcut(sampleFragmented, 'r', { ctrl: true })
 
         addKeyboardShortcut(null, 'w', { ctrl: true })
     }
     // Skróty wewnątrzzakładowe
-    if (window.location.href.match(/analysis_(new|edit)/)) {
-        let macro = document.querySelector('#m_macro_img');
-        enableAbbriviations(macro)
-    }
+    enableAbbriviations(document.querySelector('textarea#m_macro_img'));
+    enableAbbriviations(document.querySelector('textarea#m_notes'));
+    enableAbbriviations(document.querySelector('input[type=text]#m_localization'));
+    enableAbbriviations(document.querySelector('input[type=text]#l_description'));
     // Strony startowe dla stanowisk pracy
     if (window.location.href.match(/menu\/start(\/|\?place_was_changed=)1$/)) {
         setTimeout(function () {
             if (getLocation() == 'Pracownia Histopatologii - Zatapianie')
             document.location = '/workplace/embedding';
+            if (getLocation() == 'Pracownia Histopatologii - Intra')
+            document.location = '/workplace/disposal';
         }, 2000)
     }
     // Hasło w kodzie
-    if (window.location.href.match(/medlan\.pl(\/user\/login|)\/?$/)) {
-        let login = document.querySelector('#user_login');
-        let pass = document.querySelector('#user_password');
-        document.addEventListener('keydown', function (e) {
-            if (e.key == 'F3') {
+    document.addEventListener('keydown', function (e) {
+        var loginInput = document.querySelector('#user_login');
+        var passInput = document.querySelector('#user_password');
+        if (e.key == 'F3' && passInput) {
+            e.preventDefault();
+            passInput.focus();
+        }
+        if (e.key == 'Enter' && passInput) {
+            var credentials = passInput.value; // format kodu: login<br/>hasło
+            if (!credentials.includes('<br/>')) {
+                credentials = atob(credentials)
+            } 
+            if (credentials.includes('<br/>')) {
                 e.preventDefault();
-                pass.focus();
-            }
-            if (e.key == 'Enter') {
-                e.preventDefault();
-                if (login.value == '') {
-                    let creds = pass.value; // format kodu: login<br/>hasło
-                    if (creds.includes('<br/>')) {
-                        creds = creds.split('<br/>')
-                    } else {
-                        creds = atob(creds).split('<br/>')
-                    }
-                    login.value = creds[0];
-                    pass.value = creds[1];
-                }
+                credentials = credentials.split('<br/>')
+                loginInput.value = credentials[0];
+                passInput.value = credentials[1];
                 document.querySelector('input.button').click();
             }
-        });
-    }
+        }
+    });
+
     if (window.location.href.match(/user\/logout/)) {
         document.addEventListener('keydown', function (e) {
             if (e.key == 'F3') {
@@ -93,8 +93,8 @@ function displayText(text, hoverText = 'Dodatek PatARCH Brzozów.', width = 200)
     /*
       Wyświetla informacje w prawym dolnym rogu paska statusu.
     */
-    let footer = document.querySelector('#div-main-footer');
-    let addonBox = document.querySelector('#addon-box');
+    var footer = document.querySelector('#div-main-footer');
+    var addonBox = document.querySelector('#addon-box');
     if (!addonBox) {
         addonBox = document.createElement('span');
         addonBox.style.opacity = 0.7;
@@ -111,7 +111,7 @@ function getUser() {
     /*
       Zwraca login aktualnie zalogowanej osoby.
     */
-    let user = document.querySelector('a.footer_stats_link').innerHTML.match(/\s*(?<fullname>[^(]*) \((?<login>[^)]*)\)/);
+    var user = document.querySelector('a.footer_stats_link').innerHTML.match(/\s*(?<fullname>[^(]*) \((?<login>[^)]*)\)/);
     return user.groups.login
 }
 
@@ -126,8 +126,8 @@ function selectedEmpty() {
     /*
       Zwraca true jeżeli aktwny materiał został pobrany w całości.
     */
-    let materials = document.querySelector('#sortablelist_m').children;
-    for (let material of materials) {
+    var materials = document.querySelector('#sortablelist_m').children;
+    for (var material of materials) {
         if (material.querySelector('.scrollSelected')) {
             return material.querySelectorAll('img')[1].src.includes('empty') // img z indeksem 0 to łącznik, pod 1 jest ikonka pojemnika
         }
@@ -139,8 +139,8 @@ function selectedHasAnalysis() {
     /*
       Zwraca true jeżeli aktywny materiał ma dodane badania.
     */
-    let materials = document.querySelector('#sortablelist_m').children;
-    for (let material of materials) {
+    var materials = document.querySelector('#sortablelist_m').children;
+    for (var material of materials) {
         if (material.querySelector('.scrollSelected')) {
             return material.querySelector('a[context=analysis]') !== null;
         }
@@ -161,7 +161,7 @@ function addKeyboardShortcut(element, key = '', { ctrl = false, shift = false, a
         }
     });
     if (element) {
-        let hint = document.createElement('span');
+        var hint = document.createElement('span');
         hint.classList.add('form-descr');
         hint.innerHTML += `&nbsp[${ctrl ? 'Ctrl+' : ''}${key.toUpperCase()}]&nbsp`;
         element.after(hint)
@@ -172,6 +172,9 @@ function enableAbbriviations(element) {
     /*
       Uruchamia skróty wewnątrzzakładowe dla wskazanego elementu.
     */
+    if (!element) {
+        return
+    }
     var abbrs = [
         // zamiany funkcyjne:
         [/^([0-9]+)w[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_count').value=a[1];return a[0]}],
@@ -361,9 +364,9 @@ function enableAbbriviations(element) {
         [/(^|\.\s+)(.)/g, (...a)=>{return a[1]+a[2].toUpperCase()}]
     ]
     element.addEventListener('input', (e) => {
-        let start = e.target.selectionStart - e.target.value.length;
-        let end = e.target.selectionEnd - e.target.value.length;
-        for (let abbr of abbrs) {
+        var start = e.target.selectionStart - e.target.value.length;
+        var end = e.target.selectionEnd - e.target.value.length;
+        for (var abbr of abbrs) {
             e.target.value = e.target.value.replace(...abbr)
         }
         e.target.setSelectionRange(start + e.target.value.length, end + e.target.value.length);
