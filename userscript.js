@@ -25,19 +25,13 @@ setTimeout(function () {
         }
     }
     // Zaznaczenie całości textu w polu lokalizacji
-    if (window.location.href.match(/localization_new/)) {
-        var localization = document.querySelector('#l_description');
-        localization.select();
-    }
+    var localization = document.querySelector('input[type=text]#l_description');
+    if (localization) localization.select();
     // Dodatkowe skróty klawiszowe
-    if (window.location.href.match(/analysis_(new|edit)/)) {
-        var moreFixation = document.querySelector('#a_more_fixation');
-        addKeyboardShortcut(moreFixation, 'd', { ctrl: true })
-        var sampleFragmented = document.querySelector('#a_sample_fragmented');
-        addKeyboardShortcut(sampleFragmented, 'r', { ctrl: true })
-
-        addKeyboardShortcut(null, 'w', { ctrl: true })
-    }
+    var moreFixation = document.querySelector('input[type=checkbox]#a_more_fixation');
+    addKeyboardShortcut(moreFixation, 'd', { ctrl: true })
+    var sampleFragmented = document.querySelector('input[type=checkbox]#a_sample_fragmented');
+    addKeyboardShortcut(sampleFragmented, 'r', { ctrl: true })
     // Skróty wewnątrzzakładowe
     enableAbbriviations(document.querySelector('textarea#m_macro_img'));
     enableAbbriviations(document.querySelector('textarea#m_notes'));
@@ -47,9 +41,9 @@ setTimeout(function () {
     if (window.location.href.match(/menu\/start(\/|\?place_was_changed=)1$/)) {
         setTimeout(function () {
             if (getLocation() == 'Pracownia Histopatologii - Zatapianie')
-            document.location = '/workplace/embedding';
+                document.location = '/workplace/embedding';
             if (getLocation() == 'Pracownia Histopatologii - Intra')
-            document.location = '/workplace/disposal';
+                document.location = '/workplace/disposal';
         }, 2000)
     }
     // Hasło w kodzie
@@ -74,7 +68,6 @@ setTimeout(function () {
             }
         }
     });
-
     if (window.location.href.match(/user\/logout/)) {
         document.addEventListener('keydown', function (e) {
             if (e.key == 'F3') {
@@ -152,6 +145,9 @@ function addKeyboardShortcut(element, key = '', { ctrl = false, shift = false, a
     /*
       Dodaje skrót klawiszowy do wskazanego elementu.
     */
+    if (!element) {
+        return
+    }
     document.addEventListener('keydown', function (e) {
         if (e.ctrlKey == ctrl && e.shiftKey == shift && e.altKey == alt && e.key == key) {
             e.preventDefault();
