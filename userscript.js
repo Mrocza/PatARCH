@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nakładka Brzozów
 // @namespace    http://tampermonkey.net/
-// @version      0.3.2
+// @version      0.4
 // @description  Nakładka na program PatARCH opracowana na potrzeby Zakładu Patomorfologii Brzozów.
 // @author       Piotr Milczanowski
 // @homepage     https://github.com/Mrocza/PatARCH
@@ -14,13 +14,13 @@
 
 setTimeout(function () {
     'use strict';
-    console.log('Nakładka Brzozów w wersji 0.3.2');
+    console.log('Nakładka Brzozów w wersji 0.4');
 
     // Weryfikacja całości materiału. Patrz zgłoszenie [MedLAN#5209886].
     if (window.location.href.match(/analysis_(new|edit)/)) {
-        var used = document.querySelector('#m_used_entirely');
-        if (!selectedEmpty() && selectedHasAnalysis() && used.checked) {
-            used.checked = false;
+        var usedEntirely = document.querySelector('#m_used_entirely');
+        if (!selectedEmpty() && selectedHasAnalysis() && usedEntirely.checked) {
+            usedEntirely.checked = false;
             displayText('Skorygowano pozycję "Mat. zużyty w całości?"', 'Wewnątrzzakładowa korekta błędu. Patrz zgłoszenie [MedLAN#5209886].', 260);
         }
     }
@@ -29,9 +29,9 @@ setTimeout(function () {
     if (localization) localization.select();
     // Dodatkowe skróty klawiszowe
     var moreFixation = document.querySelector('input[type=checkbox]#a_more_fixation');
-    addKeyboardShortcut(moreFixation, 'd', { ctrl: true })
+    addKeyboardShortcut(moreFixation, 'd', { ctrl: true });
     var sampleFragmented = document.querySelector('input[type=checkbox]#a_sample_fragmented');
-    addKeyboardShortcut(sampleFragmented, 'r', { ctrl: true })
+    addKeyboardShortcut(sampleFragmented, 'r', { ctrl: true });
     // Skróty wewnątrzzakładowe
     enableAbbriviations(document.querySelector('textarea#m_macro_img'));
     enableAbbriviations(document.querySelector('textarea#m_notes'));
@@ -40,11 +40,13 @@ setTimeout(function () {
     // Strony startowe dla stanowisk pracy
     if (window.location.href.match(/menu\/start(\/|\?place_was_changed=)1$/)) {
         setTimeout(function () {
-            if (getLocation() == 'Pracownia Histopatologii - Zatapianie')
+            if (getLocation() == 'Pracownia Histopatologii - Zatapianie') {
                 document.location = '/workplace/embedding';
-            if (getLocation() == 'Pracownia Histopatologii - Intra')
+            }
+            if (getLocation() == 'Pracownia Histopatologii - Intra') {
                 document.location = '/workplace/disposal';
-        }, 2000)
+            }
+        }, 2000);
     }
     // Hasło w kodzie
     document.addEventListener('keydown', function (e) {
@@ -57,14 +59,18 @@ setTimeout(function () {
         if (e.key == 'Enter' && passInput) {
             var credentials = passInput.value; // format kodu: login<br/>hasło
             if (!credentials.includes('<br/>')) {
-                credentials = atob(credentials)
+                credentials = atob(credentials);
             } 
             if (credentials.includes('<br/>')) {
                 e.preventDefault();
-                credentials = credentials.split('<br/>')
-                loginInput.value = credentials[0];
+                credentials = credentials.split('<br/>');
+                if (loginInput) {
+                    loginInput.value = credentials[0];
+                }
                 passInput.value = credentials[1];
-                document.querySelector('input.button').click();
+                var loginButton = document.querySelector('input[value=Zaloguj]')
+                    ?? document.querySelector('input[value="Odblokuj hasłem"]');
+                loginButton.click();
             }
         }
     });
@@ -94,10 +100,10 @@ function displayText(text, hoverText = 'Dodatek PatARCH Brzozów.', width = 200)
         addonBox.style.float = 'right';
         addonBox.style.cursor = 'default';
         addonBox.setAttribute('onmouseover', `return overlib('${hoverText}', WIDTH, ${width}, ABOVE, LEFT);`);
-        addonBox.setAttribute('onmouseout', 'return nd();')
+        addonBox.setAttribute('onmouseout', 'return nd();');
         footer.appendChild(addonBox);
     }
-    addonBox.innerHTML = `${text} |&nbsp`
+    addonBox.innerHTML = `${text} |&nbsp`;
 }
 
 function getUser() {
@@ -105,14 +111,14 @@ function getUser() {
       Zwraca login aktualnie zalogowanej osoby.
     */
     var user = document.querySelector('a.footer_stats_link').innerHTML.match(/\s*(?<fullname>[^(]*) \((?<login>[^)]*)\)/);
-    return user.groups.login
+    return user.groups.login;
 }
 
 function getLocation() {
     /*
       Zwraca miejsce pracy.
     */
-    return document.querySelector('.banner_licence').text
+    return document.querySelector('.banner_licence').text;
 }
 
 function selectedEmpty() {
@@ -122,10 +128,10 @@ function selectedEmpty() {
     var materials = document.querySelector('#sortablelist_m').children;
     for (var material of materials) {
         if (material.querySelector('.scrollSelected')) {
-            return material.querySelectorAll('img')[1].src.includes('empty') // img z indeksem 0 to łącznik, pod 1 jest ikonka pojemnika
+            return material.querySelectorAll('img')[1].src.includes('empty'); // img z indeksem 0 to łącznik, pod 1 jest ikonka pojemnika
         }
     }
-    return false
+    return false;
 }
 
 function selectedHasAnalysis() {
@@ -138,7 +144,7 @@ function selectedHasAnalysis() {
             return material.querySelector('a[context=analysis]') !== null;
         }
     }
-    return false
+    return false;
 }
 
 function addKeyboardShortcut(element, key = '', { ctrl = false, shift = false, alt = false }) {
@@ -146,7 +152,7 @@ function addKeyboardShortcut(element, key = '', { ctrl = false, shift = false, a
       Dodaje skrót klawiszowy do wskazanego elementu.
     */
     if (!element) {
-        return
+        return;
     }
     document.addEventListener('keydown', function (e) {
         if (e.ctrlKey == ctrl && e.shiftKey == shift && e.altKey == alt && e.key == key) {
@@ -160,7 +166,7 @@ function addKeyboardShortcut(element, key = '', { ctrl = false, shift = false, a
         var hint = document.createElement('span');
         hint.classList.add('form-descr');
         hint.innerHTML += `&nbsp[${ctrl ? 'Ctrl+' : ''}${key.toUpperCase()}]&nbsp`;
-        element.after(hint)
+        element.after(hint);
     }
 }
 
@@ -169,14 +175,14 @@ function enableAbbriviations(element) {
       Uruchamia skróty wewnątrzzakładowe dla wskazanego elementu.
     */
     if (!element) {
-        return
+        return;
     }
     var abbrs = [
         // zamiany funkcyjne:
-        [/^([0-9]+)w[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_count').value=a[1];return a[0]}],
-        [/^(wzksm|wzjm)[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_fragmented').checked=1;return a[0]}],
-        [/wyskrob.*(bcz|bjcz|bccz)[ .,:;]/i, (...a)=>{document.querySelector('#a_more_fixation').checked=1;return a[0]}],
-        [/\bDATA([ .,:;])/, ()=>{(new Date()).toISOString().replace(/([\d-]+)T(\d\d:\d\d).*/,'$1 $2 - ')}]
+        [/^([0-9]+)w[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_count').value=a[1];return a[0];}],
+        [/^(wzksm|wzjm)[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_fragmented').checked=1;return a[0];}],
+        [/wyskrob.*(bcz|bjcz|bccz)[ .,:;]/i, (...a)=>{document.querySelector('#a_more_fixation').checked=1;return a[0];}],
+        [/\bDATA([ .,:;])/, ()=>{(new Date()).toISOString().replace(/([\d-]+)T(\d\d:\d\d).*/,'$1 $2 - ')}],
         // zamiany specjalne:
         [/([0-9\]])mm/, '$1 mm'],
         [/([0-9]+)[zxcs]([0-9]+)[zxcs]([0-9]+)([zxcs]|)/, '$1x$2x$3'],
@@ -354,11 +360,11 @@ function enableAbbriviations(element) {
         [/\bmdo([ .,:;])/i, 'margines dolny$1'],
         [/\bmch([ .,:;])/i, 'margines chirurgiczny'],
         // inne
-        [/\bmięśniak([ .,:;])/i, 'szary, lity guz o wyglądzie mięśniaka$1'],
-        [/\bmięśniaki([ .,:;])/i, 'szare, lite guzy o wyglądzie mięśniaków$1'],
+        // [/\bmięśniak([ .,:;])/i, 'szary, lity guz o wyglądzie mięśniaka$1'],
+        // [/\bmięśniaki([ .,:;])/i, 'szare, lite guzy o wyglądzie mięśniaków$1'],
         // duża litera po kropce:
-        [/(^|\.\s+)(.)/g, (...a)=>{return a[1]+a[2].toUpperCase()}]
-    ]
+        [/(^|\.\s+)(.)/g, (...a)=>{return a[1]+a[2].toUpperCase();}]
+    ];
     element.addEventListener('input', (e) => {
         var start = e.target.selectionStart - e.target.value.length;
         var end = e.target.selectionEnd - e.target.value.length;
