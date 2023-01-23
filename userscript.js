@@ -159,6 +159,8 @@ function addKeyboardShortcut(element, key = '', { ctrl = false, shift = false, a
             e.preventDefault();
             if (element && element.type == 'checkbox') {
                 element.checked = !element.checked;
+                if (element.onchange)
+                    element.onchange();
             }
         }
     });
@@ -180,7 +182,7 @@ function enableAbbriviations(element) {
     var abbrs = [
         // zamiany funkcyjne:
         [/^([0-9]+)w[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_count').value=a[1];return a[0];}],
-        [/^(wzksm|wzjm)[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_fragmented').checked=1;return a[0];}],
+        [/^(wzksm|wzjm)[ .,:;]/i, (...a)=>{var f=document.querySelector('#a_sample_fragmented');f.checked=1;f.onchange();return a[0];}],
         [/wyskrob.*(bcz|bjcz|bccz)[ .,:;]/i, (...a)=>{document.querySelector('#a_more_fixation').checked=1;return a[0];}],
         [/\bDATA([ .,:;])/, ()=>{(new Date()).toISOString().replace(/([\d-]+)T(\d\d:\d\d).*/,'$1 $2 - ')}],
         // zamiany specjalne:
