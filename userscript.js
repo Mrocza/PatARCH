@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nakładka Brzozów
 // @namespace    http://tampermonkey.net/
-// @version      0.4.2
+// @version      0.4.3
 // @description  Nakładka na program PatARCH opracowana na potrzeby Zakładu Patomorfologii Brzozów.
 // @author       Piotr Milczanowski
 // @homepage     https://github.com/Mrocza/PatARCH
@@ -14,7 +14,7 @@
 
 setTimeout(function () {
     'use strict';
-    console.log('Nakładka Brzozów w wersji 0.4.2');
+    console.log('Nakładka Brzozów w wersji 0.4.3');
 
     // Weryfikacja całości materiału. Patrz zgłoszenie [MedLAN#5209886].
     if (window.location.href.match(/analysis_(new|edit)/)) {
@@ -186,7 +186,7 @@ function enableAbbriviations(element) {
         [/^([0-9]+)w[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_count').value=a[1];return a[0];}],
         [/^(wzksm|wzjm)[ .,:;]/i, (...a)=>{var f=document.querySelector('#a_sample_fragmented');f.checked=1;f.onchange();return a[0];}],
         [/wyskrob.*(bcz|bjcz|bccz)[ .,:;]/i, (...a)=>{document.querySelector('#a_more_fixation').checked=1;return a[0];}],
-        [/\bDATA([ .,:;])/, ()=>{(new Date()).toISOString().replace(/([\d-]+)T(\d\d:\d\d).*/,'$1 $2 - ')}],
+        [/\bDATA([ .,:;])/, ()=>{return (new Date()).toISOString().replace(/([\d-]+)T(\d\d:\d\d).*/,'$1 $2 - ')}],
         // zamiany specjalne:
         [/([0-9\]])mm/, '$1 mm'],
         [/([0-9]+)[zxcs]([0-9]+)[zxcs]([0-9]+)([zxcs]|)/, '$1x$2x$3'],
