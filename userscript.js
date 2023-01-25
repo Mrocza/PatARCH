@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nakładka Brzozów
 // @namespace    http://tampermonkey.net/
-// @version      0.4.3
+// @version      0.4.4
 // @description  Nakładka na program PatARCH opracowana na potrzeby Zakładu Patomorfologii Brzozów.
 // @author       Piotr Milczanowski
 // @homepage     https://github.com/Mrocza/PatARCH
@@ -14,7 +14,7 @@
 
 setTimeout(function () {
     'use strict';
-    console.log('Nakładka Brzozów w wersji 0.4.3');
+    console.log('Nakładka Brzozów w wersji 0.4.4');
 
     // Weryfikacja całości materiału. Patrz zgłoszenie [MedLAN#5209886].
     if (window.location.href.match(/analysis_(new|edit)/)) {
@@ -37,7 +37,6 @@ setTimeout(function () {
     // Skróty wewnątrzzakładowe
     enableAbbriviations(document.querySelector('textarea#m_macro_img'));
     enableAbbriviations(document.querySelector('textarea#m_notes'));
-    enableAbbriviations(document.querySelector('input[type=text]#m_localization'));
     enableAbbriviations(document.querySelector('input[type=text]#l_description'));
     // Strony startowe dla stanowisk pracy
     if (window.location.href.match(/menu\/start(\/|\?place_was_changed=)1$/)) {
@@ -182,13 +181,12 @@ function enableAbbriviations(element) {
         return;
     }
     var abbrs = [
-        // zamiany funkcyjne:
+        // zamiany specjalne:
         [/^([0-9]+)w[ .,:;]/i, (...a)=>{document.querySelector('#a_sample_count').value=a[1];return a[0];}],
         [/^(wzksm|wzjm)[ .,:;]/i, (...a)=>{var f=document.querySelector('#a_sample_fragmented');f.checked=1;f.onchange();return a[0];}],
         [/wyskrob.*(bcz|bjcz|bccz)[ .,:;]/i, (...a)=>{document.querySelector('#a_more_fixation').checked=1;return a[0];}],
         [/\bDATA([ .,:;])/, ()=>{return (new Date()).toISOString().replace(/([\d-]+)T(\d\d:\d\d).*/,'$1 $2 - ')}],
-        // zamiany specjalne:
-        [/([0-9\]])mm/, '$1 mm'],
+        [/([0-9\]])mm/, (...a)=>{return element.selectionEnd-a[2]>=3?a[1]+' mm':a[0];}],
         [/([0-9]+)[zxcs]([0-9]+)[zxcs]([0-9]+)([zxcs]|)/, '$1x$2x$3'],
         // materiały drobne
         [/\b1w([ .,:;])/i, 'jeden wycinek$1'],
@@ -364,17 +362,24 @@ function enableAbbriviations(element) {
         [/\bmdo([ .,:;])/i, 'margines dolny$1'],
         [/\bmch([ .,:;])/i, 'margines chirurgiczny'],
         // inne
-        // [/\bmięśniak([ .,:;])/i, 'szary, lity guz o wyglądzie mięśniaka$1'],
-        // [/\bmięśniaki([ .,:;])/i, 'szare, lite guzy o wyglądzie mięśniaków$1'],
-        // duża litera po kropce:
-        [/(^|\.\s+)(.)/g, (...a)=>{return a[1]+a[2].toUpperCase();}]
+        [/\bmięśniak([ .,:;])/i, 'szary, lity guz o wyglądzie mięśniaka$1'],
+        [/\bmięśniaki([ .,:;])/i, 'szare, lite guzy o wyglądzie mięśniaków$1'],
     ];
     element.addEventListener('input', (e) => {
-        var start = e.target.selectionStart - e.target.value.length;
-        var end = e.target.selectionEnd - e.target.value.length;
+        // selection start and end as distance from end of string:
+        var start = e.target.value.length - e.target.selectionStart;
+        var end = e.target.value.length - e.target.selectionEnd;
+        // removes tailing whitespace in front of cursor:
+        var frontOfCursor = e.target.value.substring(e.target.value.length+start)
+        if (frontOfCursor && !frontOfCursor.trim()) {
+            e.target.value = e.target.value.slice(0, start)
+            // jump selection to end of new string:
+            start = 0
+            end = 0
+        }
         for (var abbr of abbrs) {
             e.target.value = e.target.value.replace(...abbr)
         }
-        e.target.setSelectionRange(start + e.target.value.length, end + e.target.value.length);
-    })
+        e.target.setSelectionRange(e.target.value.length - start, e.target.value.length - end);
+    });
 }
