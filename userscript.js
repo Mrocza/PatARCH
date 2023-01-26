@@ -68,7 +68,11 @@ setTimeout(function () {
                 if (loginInput) {
                     loginInput.value = credentials[0];
                 }
-                passInput.value = credentials[1];
+                if (e.getModifierState('CapsLock')) {
+                    passInput.value = flipCase(credentials[1]);
+                } else {
+                    passInput.value = credentials[1];
+                }
                 var loginButton = document.querySelector('input[value=Zaloguj]')
                     ?? document.querySelector('input[value="Odblokuj hasłem"]');
                 loginButton.click();
