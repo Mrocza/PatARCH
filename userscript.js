@@ -370,9 +370,9 @@ function enableAbbriviations(element) {
         var start = e.target.value.length - e.target.selectionStart;
         var end = e.target.value.length - e.target.selectionEnd;
         // removes tailing whitespace in front of cursor:
-        var frontOfCursor = e.target.value.substring(e.target.value.length+start)
+        var frontOfCursor = e.target.value.substring(e.target.value.length-start)
         if (frontOfCursor && !frontOfCursor.trim()) {
-            e.target.value = e.target.value.slice(0, start)
+            e.target.value = e.target.value.substring(0, e.target.value.length-start)
             // jump selection to end of new string:
             start = 0
             end = 0
