@@ -59,6 +59,9 @@ setTimeout(function () {
         }
         if (e.key == 'Enter' && passInput) {
             var credentials = passInput.value; // format kodu: login<br/>hasło
+            if (e.getModifierState('CapsLock')) {
+                credentials = flipCase(credentials);
+            }
             if (!credentials.includes('<br/>')) {
                 credentials = atob(credentials);
             }
@@ -68,11 +71,7 @@ setTimeout(function () {
                 if (loginInput) {
                     loginInput.value = credentials[0];
                 }
-                if (e.getModifierState('CapsLock')) {
-                    passInput.value = flipCase(credentials[1]);
-                } else {
-                    passInput.value = credentials[1];
-                }
+                passInput.value = credentials[1];
                 var loginButton = document.querySelector('input[value=Zaloguj]')
                     ?? document.querySelector('input[value="Odblokuj hasłem"]');
                 loginButton.click();
