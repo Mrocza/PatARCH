@@ -26,8 +26,7 @@ setTimeout(function () {
     }
     // Zaznaczenie całości textu w polu lokalizacji
     if (window.location.href.match(/localization_(edit|new)/)) {
-        var localization = document.querySelector('input[type=text]#l_description');
-        if (localization) localization.select();
+        document.querySelector('input[type=text]#l_description').select();
     }
     // Dodatkowe skróty klawiszowe
     var moreFixation = document.querySelector('input[type=checkbox]#a_more_fixation');
@@ -39,16 +38,16 @@ setTimeout(function () {
     enableAbbriviations(document.querySelector('textarea#m_notes'));
     enableAbbriviations(document.querySelector('input[type=text]#l_description'));
     // Strony startowe dla stanowisk pracy
-    if (window.location.href.match(/menu\/start(\/|\?place_was_changed=)1$/)) {
-        setTimeout(function () {
+    setTimeout(function () {
+        if (window.location.href.match(/menu\/start\/(|\?place_was_changed=)1$/)) {
             if (getLocation() == 'Pracownia Histopatologii - Zatapianie') {
                 document.location = '/workplace/embedding';
             }
             if (getLocation() == 'Pracownia Histopatologii - Intra') {
                 document.location = '/workplace/disposal';
             }
-        }, 2000);
-    }
+        }
+    }, 2000);
     // Hasło w kodzie
     document.addEventListener('keydown', function (e) {
         var loginInput = document.querySelector('#user_login');
