@@ -382,15 +382,13 @@ function enableAbbriviations(element) {
         // perform replacements while preserving first character case:
         for (var abbr of abbrs) {
             if (typeof abbr[0] == 'string') {
-                var re = new RegExp(`${abbr[0]}([ .,:;])`,'i')
+                var re = new RegExp(`\\b${abbr[0]}([ .,:;])`,'i')
                 e.target.value = e.target.value.replace(re, (...a) => {
-                    console.log(a[0])
                     if (a[0].charAt(0) != a[0].charAt(0).toUpperCase()) {
                         return abbr[1] + a[1];
                     } else {
                         return abbr[1].charAt(0).toUpperCase() + abbr[1].slice(1) + a[1];
-                    }
-                     
+                    }  
                 })
             } else {
                 e.target.value = e.target.value.replace(...abbr)
