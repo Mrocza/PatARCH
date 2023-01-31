@@ -186,8 +186,8 @@ function enableAbbriviations(element) {
         // zamiany specjalne:
         [/^([0-9]+)w[ .,:;]/i, (...a)=>{var c=document.querySelector('#a_sample_count');if(c)c.value=a[1];return a[0];}],
         [/^(wzksm|wzjm)[ .,:;]/i, (...a)=>{var f=document.querySelector('#a_sample_fragmented');if(f){f.checked=1;f.onchange();}return a[0];}],
-        [/wyskrob.*(bcz|bjcz|bccz)[ .,:;]/i, (...a)=>{var m=document.querySelector('#a_more_fixation');if(m)m.checked=1;return a[0];}],
-        [/\b'DATA([ .,:;])/, ()=>{return (new Date()).toISOString().replace(/([\d-]+)T(\d\d:\d\d).*/,'$1 $2 - ')}],
+        [/wyskrob.*(bcz|bjcz|bccz)[ .,:;]/i, (...a)=>{var m=document.querySelector('#a_more_fixation');if(m&&(new Date()).getDay()!=5)m.checked=1;return a[0];}],
+        [/\bDATA([ .,:;])/, ()=>{return (new Date()).toISOString().replace(/([\d-]+)T(\d\d:\d\d).*/,'$1 $2 - ')}],
         [/([0-9\]])mm/, (...a)=>{return element.selectionEnd-a[2]>=3?a[1]+' mm':a[0];}],
         [/([0-9]+)[zxcs]([0-9]+)[zxcs]([0-9]+)([zxcs]|)/, '$1x$2x$3'],
         // materiały drobne
