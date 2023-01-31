@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nakładka Brzozów
 // @namespace    http://tampermonkey.net/
-// @version      0.4.4
+// @version      0.4.6dev
 // @description  Nakładka na program PatARCH opracowana na potrzeby Zakładu Patomorfologii Brzozów.
 // @author       Piotr Milczanowski
 // @homepage     https://github.com/Mrocza/PatARCH
@@ -14,7 +14,7 @@
 
 setTimeout(function () {
     'use strict';
-    console.log('Nakładka Brzozów w wersji 0.4.4');
+    console.log('Nakładka Brzozów w wersji 0.4.6dev');
 
     // Weryfikacja całości materiału. Patrz zgłoszenie [MedLAN#5209886].
     if (window.location.href.match(/analysis_(new|edit)/)) {
@@ -26,8 +26,7 @@ setTimeout(function () {
     }
     // Zaznaczenie całości textu w polu lokalizacji
     if (window.location.href.match(/localization_(edit|new)/)) {
-        var localization = document.querySelector('input[type=text]#l_description');
-        if (localization) localization.select();
+        document.querySelector('input[type=text]#l_description').select();
     }
     // Dodatkowe skróty klawiszowe
     var moreFixation = document.querySelector('input[type=checkbox]#a_more_fixation');
@@ -39,16 +38,16 @@ setTimeout(function () {
     enableAbbriviations(document.querySelector('textarea#m_notes'));
     enableAbbriviations(document.querySelector('input[type=text]#l_description'));
     // Strony startowe dla stanowisk pracy
-    if (window.location.href.match(/menu\/start(\/|\?place_was_changed=)1$/)) {
-        setTimeout(function () {
+    setTimeout(function () {
+        if (window.location.href.match(/menu\/start\/(|\?place_was_changed=)1$/)) {
             if (getLocation() == 'Pracownia Histopatologii - Zatapianie') {
                 document.location = '/workplace/embedding';
             }
             if (getLocation() == 'Pracownia Histopatologii - Intra') {
                 document.location = '/workplace/disposal';
             }
-        }, 2000);
-    }
+        }
+    }, 2000);
     // Hasło w kodzie
     document.addEventListener('keydown', function (e) {
         var loginInput = document.querySelector('#user_login');
@@ -59,6 +58,9 @@ setTimeout(function () {
         }
         if (e.key == 'Enter' && passInput) {
             var credentials = passInput.value; // format kodu: login<br/>hasło
+            if (e.getModifierState('CapsLock')) {
+                credentials = flipCase(credentials);
+            }
             if (!credentials.includes('<br/>')) {
                 credentials = atob(credentials);
             }
@@ -380,15 +382,13 @@ function enableAbbriviations(element) {
         // perform replacements while preserving first character case:
         for (var abbr of abbrs) {
             if (typeof abbr[0] == 'string') {
-                var re = new RegExp(`${abbr[0]}([ .,:;])`,'i')
+                var re = new RegExp(`\\b${abbr[0]}([ .,:;])`,'i')
                 e.target.value = e.target.value.replace(re, (...a) => {
-                    console.log(a[0])
                     if (a[0].charAt(0) != a[0].charAt(0).toUpperCase()) {
                         return abbr[1] + a[1];
                     } else {
                         return abbr[1].charAt(0).toUpperCase() + abbr[1].slice(1) + a[1];
-                    }
-                     
+                    }  
                 })
             } else {
                 e.target.value = e.target.value.replace(...abbr)
