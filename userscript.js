@@ -162,8 +162,9 @@ function addKeyboardShortcut(element, key = '', { ctrl = false, shift = false, a
             e.preventDefault();
             if (element && element.type == 'checkbox') {
                 element.checked = !element.checked;
-                if (element.onchange)
+                if (element.onchange) {
                     element.onchange();
+                }
             }
         }
     });
@@ -372,26 +373,26 @@ function enableAbbriviations(element) {
         var start = e.target.value.length - e.target.selectionStart;
         var end = e.target.value.length - e.target.selectionEnd;
         // removes tailing whitespace in front of cursor:
-        var frontOfCursor = e.target.value.substring(e.target.value.length-start)
+        var frontOfCursor = e.target.value.substring(e.target.value.length-start);
         if (frontOfCursor && !frontOfCursor.trim()) {
-            e.target.value = e.target.value.substring(0, e.target.value.length-start)
+            e.target.value = e.target.value.substring(0, e.target.value.length-start);
             // jump selection to end of new string:
-            start = 0
-            end = 0
+            start = 0;
+            end = 0;
         }
         // perform replacements while preserving first character case:
         for (var abbr of abbrs) {
             if (typeof abbr[0] == 'string') {
-                var re = new RegExp(`\\b${abbr[0]}([ .,:;])`,'i')
+                var re = new RegExp(`\\b${abbr[0]}([ .,:;])`,'i');
                 e.target.value = e.target.value.replace(re, (...a) => {
                     if (a[0].charAt(0) != a[0].charAt(0).toUpperCase()) {
                         return abbr[1] + a[1];
                     } else {
                         return abbr[1].charAt(0).toUpperCase() + abbr[1].slice(1) + a[1];
                     }  
-                })
+                });
             } else {
-                e.target.value = e.target.value.replace(...abbr)
+                e.target.value = e.target.value.replace(...abbr);
             }
         }
         // advance selection forward to account for length of replacement:
