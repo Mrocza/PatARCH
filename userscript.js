@@ -47,7 +47,7 @@ setTimeout(function () {
                 document.location = '/workplace/disposal';
             }
         }
-    }, 2000);
+    }, 900);
     // Hasło w kodzie
     document.addEventListener('keydown', function (e) {
         var loginInput = document.querySelector('#user_login');
