@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nakładka Brzozów
 // @namespace    http://tampermonkey.net/
-// @version      0.5.1
+// @version      0.5.2
 // @description  Nakładka na program PatARCH opracowana na potrzeby Zakładu Patomorfologii Brzozów.
 // @author       Piotr Milczanowski
 // @homepage     https://github.com/Mrocza/PatARCH
@@ -14,7 +14,7 @@
 
 setTimeout(function () {
     'use strict';
-    console.log('Nakładka Brzozów w wersji 0.5.1');
+    console.log('Nakładka Brzozów w wersji 0.5.2');
 
     // Weryfikacja całości materiału. Patrz zgłoszenie [MedLAN#5209886].
     if (window.location.href.match(/analysis_(new|edit)/)) {
