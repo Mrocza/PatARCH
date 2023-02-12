@@ -124,6 +124,19 @@ function getLocation() {
     return document.querySelector('.banner_licence').text;
 }
 
+function getTime(format = '%Y-%m-%d %H:%M') {
+    /*
+      Zwraca datę i godzinę w określonym formacie
+    */
+    var now = new Date();
+    return format
+        .replace('%Y', now.getFullYear())
+        .replace('%m', (now.getMonth()+1).toString().padStart(2,'0'))
+        .replace('%d', now.getDate().toString().padStart(2,'0'))
+        .replace('%H', now.getHours().toString().padStart(2,'0'))
+        .replace('%M', now.getMinutes().toString().padStart(2,'0'));
+}
+
 function selectedEmpty() {
     /*
       Zwraca true jeżeli aktwny materiał został pobrany w całości.
@@ -188,7 +201,7 @@ function enableAbbriviations(element) {
         [/^([0-9]+)w[ .,:;]/i, (...a)=>{var c=document.querySelector('#a_sample_count');if(c)c.value=a[1];return a[0];}],
         [/^(wzksm|wzjm)[ .,:;]/i, (...a)=>{var f=document.querySelector('#a_sample_fragmented');if(f){f.checked=1;f.onchange();}return a[0];}],
         [/wyskrob.*(bcz|bjcz|bccz)[ .,:;]/i, (...a)=>{var m=document.querySelector('#a_more_fixation');if(m&&(new Date()).getDay()!=5)m.checked=1;return a[0];}],
-        [/\bDATA([ .,:;])/, ()=>{return (new Date()).toISOString().replace(/([\d-]+)T(\d\d:\d\d).*/,'$1 $2 - ')}],
+        [/\bDATA([ .,:;])/, ()=>{return getTime() + ' - '}],
         [/([0-9\]])mm/, (...a)=>{return element.selectionEnd-a[2]>=3?a[1]+' mm':a[0];}],
         [/([0-9]+)[zxcs]([0-9]+)[zxcs]([0-9]+)([zxcs]|)/, '$1x$2x$3'],
         // materiały drobne
