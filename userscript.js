@@ -385,14 +385,11 @@ function enableAbbriviations(element) {
         // selection start and end as distance from end of string:
         var start = e.target.value.length - e.target.selectionStart;
         var end = e.target.value.length - e.target.selectionEnd;
-        // removes tailing whitespace in front of cursor:
-        var frontOfCursor = e.target.value.substring(e.target.value.length-start);
-        if (frontOfCursor && !frontOfCursor.trim()) {
-            e.target.value = e.target.value.substring(0, e.target.value.length-start);
-            // jump selection to end of new string:
-            start = 0;
-            end = 0;
-        }
+        // slice value at current cursor position:
+        var cursorFront = e.target.value.substring(e.target.selectionStart);
+        var cursorBack = e.target.value.substring(0, e.target.selectionEnd);
+        // trim value to back only to prevent front of cursor interference:
+        e.target.value = cursorBack;
         // perform replacements while preserving first character case:
         for (var abbr of abbrs) {
             if (typeof abbr[0] == 'string') {
@@ -408,6 +405,8 @@ function enableAbbriviations(element) {
                 e.target.value = e.target.value.replace(...abbr);
             }
         }
+        // restore front of cursor:
+        e.target.value += cursorFront
         // advance selection forward to account for length of replacement:
         e.target.setSelectionRange(e.target.value.length - start, e.target.value.length - end);
     });
